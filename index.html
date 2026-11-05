@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Banco Brotau</title>
+<meta name="description" content="Banco de pruebas de almacenamiento local de Brotau. Solo datos ficticios.">
+<meta name="theme-color" content="#003C6C">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Banco Brotau">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="icono-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Poppins:wght@600;700&display=swap">
+<style>
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0} img{max-width:100%} [hidden]{display:none!important}
+
+/* Layout: una columna estrecha de trabajo de campo; tarjetas solo donde hay estado que leer; botones de 56px para usar con guantes. */
+:root{
+  --bg:#F2F6F7; --surface:#FFFFFF; --ink:#0B2233; --muted:#4A6070; --line:#D4E0E6;
+  --navy:#003C6C; --teal:#007A85; --pradera:#14A17A; --arena:#D8C3A5;
+  --ok:#11845F; --warn:#A8670E; --bad:#B9362E;
+  --ok-bg:#E3F3EC; --warn-bg:#FBF0DC; --bad-bg:#F9E3E1; --run-bg:#E2EEF5;
+  --btn:#003C6C; --btn-fg:#FFFFFF; --btn2:#E6EEF2; --btn2-fg:#003C6C;
+  --bar:#007A85;
+  --f-display:'Poppins',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --f-body:'Lato',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --f-mono:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#071621; --surface:#0D2231; --ink:#E6EEF2; --muted:#9DB2C0; --line:#1D3A4D;
+  --navy:#7DB8E8; --teal:#46B9C4; --pradera:#3FC79B; --arena:#D8C3A5;
+  --ok:#4CD3A2; --warn:#F0B355; --bad:#F2867C;
+  --ok-bg:#0F3328; --warn-bg:#3A2A10; --bad-bg:#3D1916; --run-bg:#12324A;
+  --btn:#1C6FA8; --btn-fg:#FFFFFF; --btn2:#16324A; --btn2-fg:#CFE4F3; --bar:#46B9C4; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#071621; --surface:#0D2231; --ink:#E6EEF2; --muted:#9DB2C0; --line:#1D3A4D;
+  --navy:#7DB8E8; --teal:#46B9C4; --pradera:#3FC79B; --arena:#D8C3A5;
+  --ok:#4CD3A2; --warn:#F0B355; --bad:#F2867C;
+  --ok-bg:#0F3328; --warn-bg:#3A2A10; --bad-bg:#3D1916; --run-bg:#12324A;
+  --btn:#1C6FA8; --btn-fg:#FFFFFF; --btn2:#16324A; --btn2-fg:#CFE4F3; --bar:#46B9C4; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.5}
+.wrap{max-width:640px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px;display:flex;flex-direction:column;gap:20px}
+header{display:flex;gap:14px;align-items:center}
+header img{width:30px;height:auto;flex:none}
+h1{font-family:var(--f-display);font-weight:700;font-size:1.45rem;line-height:1.15;margin:0;color:var(--navy);text-wrap:balance}
+h2{font-family:var(--f-display);font-weight:600;font-size:1.05rem;margin:0;color:var(--ink);text-wrap:balance}
+p{margin:0}
+.lead{color:var(--muted);max-width:60ch}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-family:var(--f-mono);font-size:.75rem;padding:3px 9px;border-radius:999px;border:1px solid var(--line);color:var(--muted);background:var(--surface)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.card-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.rows{display:flex;flex-direction:column;margin:0;padding:0}
+.row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.35fr);gap:12px;padding:9px 0;border-top:1px solid var(--line);align-items:baseline}
+.row:first-child{border-top:0}
+.row dt{color:var(--muted);font-size:.92rem}
+.row dd{margin:0;font-family:var(--f-mono);font-size:.88rem;text-align:right;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.pill{font-family:var(--f-display);font-weight:600;font-size:.75rem;letter-spacing:.04em;text-transform:uppercase;padding:4px 10px;border-radius:999px;white-space:nowrap}
+.pill.idle{background:var(--btn2);color:var(--muted)}
+.pill.run{background:var(--run-bg);color:var(--teal)}
+.pill.ok{background:var(--ok-bg);color:var(--ok)}
+.pill.warn{background:var(--warn-bg);color:var(--warn)}
+.pill.bad{background:var(--bad-bg);color:var(--bad)}
+.v-ok{color:var(--ok)} .v-warn{color:var(--warn)} .v-bad{color:var(--bad)}
+.steps{display:flex;flex-direction:column;gap:14px;counter-reset:paso;margin:0;padding:0;list-style:none}
+.step{display:grid;grid-template-columns:34px minmax(0,1fr);gap:12px}
+.step::before{counter-increment:paso;content:counter(paso);font-family:var(--f-display);font-weight:700;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--navy);color:var(--surface);font-size:.95rem}
+.step-body{display:flex;flex-direction:column;gap:10px;min-width:0}
+.step-body .desc{color:var(--muted);font-size:.94rem}
+.btns{display:flex;flex-wrap:wrap;gap:10px}
+button{font-family:var(--f-display);font-weight:600;font-size:1rem;min-height:56px;padding:0 22px;border-radius:10px;border:0;background:var(--btn);color:var(--btn-fg);cursor:pointer}
+button.sec{background:var(--btn2);color:var(--btn2-fg)}
+button.danger{background:var(--bad-bg);color:var(--bad)}
+button:disabled{opacity:.45;cursor:not-allowed}
+button:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
+.bar{height:8px;border-radius:999px;background:var(--btn2);overflow:hidden}
+.bar>i{display:block;height:100%;width:0;background:var(--bar);transition:width .15s linear}
+.out{font-family:var(--f-mono);font-size:.85rem;font-variant-numeric:tabular-nums;color:var(--ink);overflow-wrap:anywhere}
+.out:empty{display:none}
+.big{font-family:var(--f-mono);font-size:2rem;font-weight:700;color:var(--teal);font-variant-numeric:tabular-nums}
+.notice{border-radius:10px;padding:12px 14px;font-size:.94rem}
+.notice.warn{background:var(--warn-bg);color:var(--ink)}
+.notice.bad{background:var(--bad-bg);color:var(--ink)}
+.notice.ok{background:var(--ok-bg);color:var(--ink)}
+.results{display:flex;flex-direction:column;gap:10px}
+.res{border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.res-top{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap}
+.res-top b{font-family:var(--f-display);font-weight:600;font-size:.92rem}
+.res small{color:var(--muted);font-size:.8rem}
+.empty{color:var(--muted);font-size:.94rem}
+textarea{width:100%;min-height:120px;font-family:var(--f-mono);font-size:.75rem;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);padding:8px}
+.foot{color:var(--muted);font-size:.86rem;display:flex;flex-direction:column;gap:8px;max-width:62ch}
+@media (prefers-reduced-motion: reduce){.bar>i{transition:none}}
+
+.motores{display:flex;flex-wrap:wrap;gap:8px}
+.motor{font-family:var(--f-display);font-weight:600;font-size:.9rem;text-decoration:none;padding:10px 14px;min-height:44px;display:inline-flex;align-items:center;border-radius:10px;border:1px solid var(--line);color:var(--btn2-fg);background:var(--surface)}
+.motor.activo{background:var(--btn);color:var(--btn-fg);border-color:var(--btn)}
+.motor:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
+.muted{color:var(--muted);font-size:.9rem}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <img alt="" src="data:image/png;base64,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">
+    <h1>Banco Brotau</h1>
+  </header>
+  <p class="lead">Compara en este móvil cómo guarda datos cada motor de base de datos local candidato para Brotau: velocidad, espacio que ocupa, y si los datos sobreviven a un cierre brusco o a un reinicio. Todos los datos son ficticios.</p>
+  <div class="chips"><span class="chip">banco v3</span><span class="chip">ADR-0011 §7</span><span class="chip" id="chip-disp">dispositivo —</span></div>
+
+  <div class="notice warn" id="aviso-instalar" hidden>Para probar como una app de verdad, instálala: en Safari pulsa <b>Compartir</b> → <b>«Añadir a pantalla de inicio»</b> y ábrela desde el icono <b>Banco Brotau</b>.</div>
+
+  <section class="card" aria-labelledby="h-motor">
+    <div class="card-head"><h2 id="h-motor">Motor que se está probando</h2></div>
+    <nav class="motores" id="motores" aria-label="Motores"></nav>
+    <p class="muted" id="motor-nota"></p>
+  </section>
+
+  <section class="card" aria-labelledby="h-abrir">
+    <div class="card-head"><h2 id="h-abrir">Al abrir</h2><span class="pill run" id="st-abrir">Comprobando</span></div>
+    <dl class="rows">
+      <div class="row"><dt>Arranque de la base</dt><dd id="r-arranque">—</dd></div>
+      <div class="row"><dt>Registros guardados</dt><dd id="r-filas">—</dd></div>
+      <div class="row"><dt>Cadena de huellas</dt><dd id="r-cadena">—</dd></div>
+      <div class="row"><dt>Último cierre forzado</dt><dd id="r-cierre">Sin pruebas pendientes</dd></div>
+    </dl>
+    <div class="notice bad" id="err-abrir" hidden></div>
+  </section>
+
+  <section class="card" aria-labelledby="h-disp">
+    <div class="card-head"><h2 id="h-disp">Este dispositivo</h2></div>
+    <dl class="rows">
+      <div class="row"><dt>Sistema</dt><dd id="e-sistema">—</dd></div>
+      <div class="row"><dt>Instalada como app</dt><dd id="e-instalada">—</dd></div>
+      <div class="row"><dt>Almacenamiento persistente</dt><dd id="e-persist">—</dd></div>
+      <div class="row"><dt>Espacio usado / disponible</dt><dd id="e-espacio">—</dd></div>
+      <div class="row"><dt>Memoria de la página</dt><dd id="e-mem">—</dd></div>
+    </dl>
+    <div class="btns"><button class="sec" id="b-persist" type="button">Pedir almacenamiento persistente</button></div>
+    <p class="out" id="o-persist"></p>
+  </section>
+
+  <section class="card" aria-labelledby="h-pruebas">
+    <div class="card-head"><h2 id="h-pruebas">Pruebas, en este orden</h2><span class="pill idle" id="st-pruebas">Esperando la base</span></div>
+    <ol class="steps">
+      <li class="step"><div class="step-body">
+        <h2>Escritura una a una</h2>
+        <p class="desc">Guarda 300 trasplantes de prueba, cada uno en su propia transacción, con su operación en el registro y su entrada de auditoría. Mide el tiempo y el <b>espacio</b> de cada guardado.</p>
+        <div class="btns"><button id="b-uno" type="button" disabled>Ejecutar</button></div>
+        <div class="bar" hidden id="p-uno"><i></i></div>
+        <p class="out" id="o-uno"></p>
+      </div></li>
+      <li class="step"><div class="step-body">
+        <h2>Escritura en lote</h2>
+        <p class="desc">Guarda 1.000 trasplantes en una sola transacción, como al importar un paquete de otro dispositivo.</p>
+        <div class="btns"><button id="b-lote" type="button" disabled>Ejecutar</button></div>
+        <div class="bar" hidden id="p-lote"><i></i></div>
+        <p class="out" id="o-lote"></p>
+      </div></li>
+      <li class="step"><div class="step-body">
+        <h2>Cadena de huellas</h2>
+        <p class="desc">Recalcula la huella SHA-256 de cada entrada de auditoría y comprueba que la cadena está entera. Después altera una entrada dentro de una transacción que se deshace sola, para ver que la alteración se detecta.</p>
+        <div class="btns"><button id="b-cadena" type="button" disabled>Ejecutar</button></div>
+        <p class="out" id="o-cadena"></p>
+      </div></li>
+      <li class="step"><div class="step-body">
+        <h2>Cierre forzado</h2>
+        <p class="desc">Empieza a guardar 6.000 trasplantes en una sola transacción, despacio (unos 40 segundos). Cuando el contador vaya entre 1.000 y 4.000, cierra la app a la fuerza desde el selector de apps y vuelve a abrirla. Al abrir se comprueba que no quedó nada a medias y que no se perdió nada.</p>
+        <div class="btns"><button id="b-cierre" type="button" disabled>Empezar</button></div>
+        <div id="w-cierre" hidden>
+          <div class="notice warn">Cierra la app ahora, antes de que el contador llegue a 6.000.</div>
+          <p class="big" id="c-cierre">0</p>
+        </div>
+        <p class="out" id="o-cierre"></p>
+      </div></li>
+      <li class="step"><div class="step-body">
+        <h2>Reinicio del móvil</h2>
+        <p class="desc">Pulsa «Anotar antes», apaga y enciende el teléfono, vuelve a abrir la app y pulsa «Comprobar después».</p>
+        <div class="btns"><button class="sec" id="b-antes" type="button" disabled>Anotar antes</button><button id="b-despues" type="button" disabled>Comprobar después</button></div>
+        <p class="out" id="o-reinicio"></p>
+      </div></li>
+    </ol>
+  </section>
+
+  <section class="card" aria-labelledby="h-res">
+    <div class="card-head"><h2 id="h-res">Resultados</h2><span class="muted" id="res-cuenta"></span></div>
+    <p class="empty" id="res-vacio">Aquí aparecerá cada prueba que hagas, de cualquier motor, con su fecha y sus cifras. Se guardan en este móvil hasta que las copies.</p>
+    <div class="results" id="res-lista"></div>
+    <div class="btns"><button class="sec" id="b-copiar" type="button">Copiar resultados</button></div>
+    <textarea id="t-copia" readonly hidden aria-label="Resultados en texto"></textarea>
+    <p class="out" id="o-copiar"></p>
+  </section>
+
+  <section class="foot" aria-label="Notas">
+    <p>En iPhone, Safari no deja medir la memoria desde una página: ese dato saldrá como «no disponible».</p>
+    <p>Esta página es pública, pero solo contiene datos ficticios y no envía nada a ningún sitio: todo se queda en este móvil.</p>
+    <div class="btns"><button class="danger" id="b-borrar" type="button">Borrar las bases de prueba</button><button class="sec" id="b-borrar-res" type="button">Vaciar resultados</button></div>
+    <div id="w-borrar" hidden class="btns"><span>Se borran las bases de los tres motores en este móvil (los resultados se conservan).</span><button class="danger" id="b-borrar-si" type="button">Sí, borrar</button><button class="sec" id="b-borrar-no" type="button">Cancelar</button></div>
+  </section>
+</div>
+<script type="module" src="app.js"></script>
+</body>
+</html>
