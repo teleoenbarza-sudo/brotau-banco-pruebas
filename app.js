@@ -333,8 +333,17 @@ async function abrir(){
   $('motor-nota').textContent = MOTOR.nota;
   const t0 = performance.now();
   let info;
-  try { const r = await abrirMotor(); db = r.motor; info = r.info; }
-  catch (e) { return falloApertura('La base no se pudo abrir: ' + (e?.message || e)); }
+  // Safari puede tardar en soltar los archivos de la carga anterior (InvalidStateError): reintentar antes de rendirse.
+  let intentos = 0;
+  for (;;){
+    intentos++;
+    try { const r = await abrirMotor(); db = r.motor; info = { ...r.info, intentos_apertura: intentos }; break; }
+    catch (e) {
+      const msg = String(e?.message || e);
+      if (intentos < 6 && /invalid state|InvalidState|NoModificationAllowed|locked|access handle/i.test(msg)){ await new Promise(r => setTimeout(r, 500 * intentos)); continue; }
+      return falloApertura('La base no se pudo abrir tras ' + intentos + ' intento(s): ' + msg);
+    }
+  }
   const tAbrir = performance.now() - t0;
   try { await db.exec(S().esquema); }
   catch (e) { return falloApertura('El esquema no se pudo crear: ' + (e?.message || e)); }
