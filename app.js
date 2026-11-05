@@ -6,7 +6,7 @@ const MOTORES = {
   'sqlite-opfs': { nombre: 'SQLite · OPFS', corto: 'SQLite OPFS', dialecto: 'sqlite', nota: 'Plan B del ADR: SQLite oficial con almacenamiento OPFS.' },
 };
 const N_UNO = 300, N_LOTE = 1000, N_CIERRE = 6000;
-const CLAVE_RES = 'brotau-banco-resultados', CLAVE_ANTES = 'brotau-banco-antes', CLAVE_BORRAR = 'brotau-banco-borrar', CLAVE_MOTOR = 'brotau-banco-motor';
+const CLAVE_RES = 'brotau-banco-resultados', CLAVE_BORRAR = 'brotau-banco-borrar', CLAVE_MOTOR = 'brotau-banco-motor';
 const $ = id => document.getElementById(id);
 const nf = new Intl.NumberFormat('es-ES');
 const nf1 = new Intl.NumberFormat('es-ES', { maximumFractionDigits: 1 });
@@ -15,6 +15,7 @@ const params = new URLSearchParams(location.search);
 const motorId = MOTORES[params.get('motor')] ? params.get('motor') : (MOTORES[lsGet(CLAVE_MOTOR)] ? lsGet(CLAVE_MOTOR) : 'pglite-opfs');
 lsSet(CLAVE_MOTOR, motorId);
 const MOTOR = MOTORES[motorId];
+const CLAVE_ANTES = 'brotau-banco-antes-' + motorId;
 let db = null, dispositivo = null;
 
 // ---------- utilidades ----------
@@ -502,7 +503,7 @@ async function copiar(){
 }
 async function borrarBases(){
   $('w-borrar').hidden = true;
-  lsSet(CLAVE_BORRAR, '1'); lsDel(CLAVE_ANTES);
+  lsSet(CLAVE_BORRAR, '1'); for (const id of Object.keys(MOTORES)) lsDel('brotau-banco-antes-' + id);
   try { await db?.cerrar(); } catch {}
   location.reload();
 }
