@@ -38,3 +38,14 @@ Para probarla como app: en Safari, *Compartir → Añadir a pantalla de inicio*.
 - SQLite falló una vez al abrir («The object is in an invalid state») segundos después de cambiar de
   motor; probable: la carga anterior aún tenía los archivos abiertos. Desde ahora la apertura reintenta.
 - **Decisión (ADR-0011):** PGlite con OPFS (`opfs-ahp`); SQLite con OPFS (`opfs-sahpool`) como plan B validado.
+
+
+---
+
+## App de campo (`/campo/`) — versión de prueba
+
+`https://teleoenbarza-sudo.github.io/brotau-banco-pruebas/campo/`
+
+- Es **solo el código compilado** de la app de campo de Brotau, para probarla en el móvil con HTTPS (ADR-0012 §10, opción C). El código fuente vive en un repositorio privado.
+- **No contiene datos.** Los datos que se registran se quedan en el almacenamiento privado de cada móvil; esta página no envía nada a ningún sitio.
+- Protocolo **Posidonia 0.1 · borrador sin validar científicamente**.

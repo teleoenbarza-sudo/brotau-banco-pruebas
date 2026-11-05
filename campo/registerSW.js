@@ -1,0 +1,1 @@
+if('serviceWorker' in navigator) {window.addEventListener('load', () => {navigator.serviceWorker.register('/brotau-banco-pruebas/campo/sw.js', { scope: '/brotau-banco-pruebas/campo/' })})}
